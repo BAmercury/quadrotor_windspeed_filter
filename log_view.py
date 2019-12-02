@@ -36,8 +36,8 @@ with open(file_path) as datafile:
         datetime_str = row[0]
         time_stamps.append(fix_timestamp(datetime_str))
         wind_speed.append(row[1])
-        pitch.append(row[5])
-        roll.append(row[6])
+        pitch.append(row[6])
+        roll.append(row[7])
 
 fig1, ax1 = plt.subplots()
 ax1.plot(time_stamps, pitch)

@@ -8,7 +8,7 @@ Data we have:
         - From a preliminary view we can see that this shows the vehicle can induce flow through the sensor
           that may be proporinate to ground speed (So assuming this is airspeed, ground + wind)
 What we want:
-    - In the end, we want a measurement of the outside wind speed
+    - In the end, we want a measurement of the airspeed, windspeed, and groundspeed
 
 What data we need:
     - We need a new set of data that will encompass the dynamics of the sensor plus its relationship to the UMAR quadrotor
@@ -35,3 +35,17 @@ Notes on the logger program itself:
     - Update rate: 5hz
     - Boolean at line 90 of the TransonicaLogger.cs should be set to true, so we can log everything
     - Or modify the SSS logs to log everything
+
+Current set of data (LogSet_1)
+    - Manuever identifable, i could potentially work off this data
+    - Sensor placement is a factor in terms of noise
+    - New sets of data would be used to validate performance of filter and model
+    - need better ardupilot vehicle log
+
+
+What do I have:
+    - Ground speed data (magnitude)
+    - Wind sensor measurement (process variable that needs to be filtered)
+        - Wind sensor measurement could be airspeed? 
+    - Pitch and roll measurements from the trinsonica
+    - altitutde

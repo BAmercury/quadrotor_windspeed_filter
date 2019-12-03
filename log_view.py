@@ -24,6 +24,7 @@ def fix_timestamp(datetime_str):
 # Remove Bias
 def remove_bias(data, dc_bias):
     data = [item - dc_bias for item in data]
+    #data = signal.detrend(data, type='constant')
     return data
 
 
@@ -46,7 +47,11 @@ def plot_fft(data, timestamps, title_str, dc_bias):
     ax.plot(xf, 2.0/N * numpy.abs(data_f[:N//2]))
     ax.set_title("FFT: " + title_str)
     
- 
+ # Smooth data (Lowpass FIR filter, moving average)
+def smooth(data, n=5):
+    data = numpy.cumsum(data, dtype=numpy.float32)
+    data[n:] = data[n:] - data[:-n]
+    return data[n - 1:] / n
 
 
 root = tk.Tk()
@@ -151,4 +156,23 @@ textstr = ("RSME %f" % rsme)
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 ax5.text(0.05, 0.95, textstr, transform=ax5.transAxes, fontsize=11,
     verticalalignment='top', bbox=props)
+
+# Filter Data and check statistics again
+# Lowpass FIR Filter (Moving Average Filter)
+ma_window = 100
+wind_speed_f = smooth(wind_speed_d, ma_window)
+fig6, ax6 = plt.subplots()
+ax6.plot(sss_time_stamps, ground_speed, label='Ground Speed')
+ax6.plot(time_stamps[0:len(wind_speed_f)], wind_speed_f, label='Filt Debiased Airspeed')
+
+ax6.set_title("Ground Speed and Filt Debiased Air Speed")
+ax6.legend()
+# Calculate statistics
+mse = numpy.square(numpy.subtract(ground_speed[0:len(wind_speed_f)], wind_speed_f[0:len(ground_speed)])).mean()
+rsme = numpy.sqrt(mse)
+textstr = ("RSME: %f" % rsme) + ("\nMA Window: %f" % ma_window)
+props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+ax6.text(0.05, 0.95, textstr, transform=ax6.transAxes, fontsize=11,
+    verticalalignment='top', bbox=props)
+
 plt.show()

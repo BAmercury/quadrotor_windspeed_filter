@@ -10,7 +10,7 @@ from datetime import datetime
 import time
 
 """
-    Program to view and analyze Trinsonica Windspeed sensor logs
+    Program to view and analyze Trinsonica Airspeed sensor logs
 """
 
 
@@ -21,7 +21,7 @@ def fix_timestamp(datetime_str):
     h, m, s = timestamp_str.split(':')
     return float(h) * 3600.0 + float(m) * 60.0 + float(s)
 
-# Remove Bias
+# Remove Bias, just subtracts a DC biasc value from every value in the list
 def remove_bias(data, dc_bias):
     data = [item - dc_bias for item in data]
     #data = signal.detrend(data, type='constant')

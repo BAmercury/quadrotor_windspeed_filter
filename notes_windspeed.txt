@@ -49,3 +49,5 @@ What do I have:
         - Wind sensor measurement could be airspeed? 
     - Pitch and roll measurements from the trinsonica
     - altitutde
+
+

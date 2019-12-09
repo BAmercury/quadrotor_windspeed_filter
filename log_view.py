@@ -23,8 +23,9 @@ def fix_timestamp(datetime_str):
 
 # Remove Bias, just subtracts a DC biasc value from every value in the list
 def remove_bias(data, dc_bias):
+    dc_bias = dc_bias
     data = [item - dc_bias for item in data]
-    #data = signal.detrend(data, type='constant')
+    #data = signal.detrend(data)
     return data
 
 
@@ -37,7 +38,6 @@ def plot_fft(data, timestamps, title_str, dc_bias):
     N = len(data)
     Fs = 5.0 # Hz, 5 samples per second
     T = 1.0/Fs # Sampling Period (Seconds)
-    time_vec = numpy.linspace(0.0, N*T, N)
     # Compute FFT
     data_f = scipy.fftpack.fft(data)
     # Define frequency domain of single sided spectrum
@@ -78,37 +78,37 @@ with open(file_path) as datafile:
         pitch.append(row[6])
         roll.append(row[7])
 
-fig1, ax1 = plt.subplots()
-ax1.plot(time_stamps, pitch)
-ax1.set_title("Pitch")
+#fig1, ax1 = plt.subplots()
+#ax1.plot(time_stamps, pitch)
+#ax1.set_title("Pitch")
 
-fig2, ax2 = plt.subplots()
-ax2.plot(time_stamps, roll)
-ax2.set_title("Roll")
+#fig2, ax2 = plt.subplots()
+#ax2.plot(time_stamps, roll)
+#ax2.set_title("Roll")
 
 
-fig3, ax3 = plt.subplots()
-ax3.plot(time_stamps, wind_speed)
-ax3.set_title("Wind Speed")
+#fig3, ax3 = plt.subplots()
+#ax3.plot(time_stamps, wind_speed)
+#ax3.set_title("Wind Speed")
 
 
 
 
 # Plotting FFTs of wind speed data
 
-# Select region where we're in trim (hover)
+# Select region where we're in trim (hover, meaning that there should be no airspeed, just windspeed)
 fig4, ax4 = plt.subplots()
 ax4.plot(range(len(wind_speed)), wind_speed)
 ax4.set_title("Wind Speed with Indices")
-# Two sets of trim data
+# Indices for the trim data
 t1 = 0
 t2 = 950
 
 trim_set_1 = wind_speed[t1:t2]
 trim_set_1 = numpy.asarray(trim_set_1, dtype=numpy.float32)
 print("DC Bias Mean: %f" % numpy.mean(trim_set_1))
+# Taking the mean of the data and using that as the DC bias
 dc_bias = numpy.mean(trim_set_1)
-
 plot_fft(wind_speed, time_stamps, "Wind Speed", dc_bias)
 
 
@@ -135,7 +135,7 @@ with open(file_path) as datafile:
 
 ground_speed = numpy.asarray(ground_speed, dtype=numpy.float32)
 
-# Plot Detrend data and ground speed to make sure it matches up
+# Plot debiased data and ground speed to make sure it matches up
 wind_speed_d = numpy.asarray(wind_speed, dtype=numpy.float32)
 wind_speed_d = remove_bias(wind_speed_d, dc_bias)
 fig5, ax5 = plt.subplots()
@@ -159,7 +159,7 @@ ax5.text(0.05, 0.95, textstr, transform=ax5.transAxes, fontsize=11,
 
 # Filter Data and check statistics again
 # Lowpass FIR Filter (Moving Average Filter)
-ma_window = 100
+ma_window = 6
 wind_speed_f = smooth(wind_speed_d, ma_window)
 fig6, ax6 = plt.subplots()
 ax6.plot(sss_time_stamps, ground_speed, label='Ground Speed')

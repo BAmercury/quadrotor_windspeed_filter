@@ -99,7 +99,7 @@ with open(file_path) as datafile:
 # Select region where we're in trim (hover, meaning that there should be no airspeed, just windspeed)
 fig4, ax4 = plt.subplots()
 ax4.plot(range(len(wind_speed)), wind_speed)
-ax4.set_title("Wind Speed with Indices")
+ax4.set_title("Raw Air Speed with Indices")
 # Indices for the trim data
 t1 = 0
 t2 = 950
@@ -109,7 +109,9 @@ trim_set_1 = numpy.asarray(trim_set_1, dtype=numpy.float32)
 print("DC Bias Mean: %f" % numpy.mean(trim_set_1))
 # Taking the mean of the data and using that as the DC bias
 dc_bias = numpy.mean(trim_set_1)
-plot_fft(wind_speed, time_stamps, "Wind Speed", dc_bias)
+
+# Remove DC bias and plot the FFT
+plot_fft(wind_speed, time_stamps, "Raw Air Speed", dc_bias)
 
 
 # Get the ground speed data to compare with
@@ -159,7 +161,7 @@ ax5.text(0.05, 0.95, textstr, transform=ax5.transAxes, fontsize=11,
 
 # Filter Data and check statistics again
 # Lowpass FIR Filter (Moving Average Filter)
-ma_window = 6
+ma_window = 100
 wind_speed_f = smooth(wind_speed_d, ma_window)
 fig6, ax6 = plt.subplots()
 ax6.plot(sss_time_stamps, ground_speed, label='Ground Speed')

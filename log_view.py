@@ -110,8 +110,11 @@ print("DC Bias Mean: %f" % numpy.mean(trim_set_1))
 # Taking the mean of the data and using that as the DC bias
 dc_bias = numpy.mean(trim_set_1)
 
+# Plot FFT without removing DC bias
+plot_fft(wind_speed, time_stamps, "Unfiltered Air Speed FFT", 0)
+
 # Remove DC bias and plot the FFT
-plot_fft(wind_speed, time_stamps, "Raw Air Speed", dc_bias)
+plot_fft(wind_speed, time_stamps, "Debiased Unfiltered Air Speed FFT", dc_bias)
 
 
 # Get the ground speed data to compare with
@@ -139,7 +142,7 @@ ground_speed = numpy.asarray(ground_speed, dtype=numpy.float32)
 
 # Plot debiased data and ground speed to make sure it matches up
 wind_speed_d = numpy.asarray(wind_speed, dtype=numpy.float32)
-wind_speed_d = remove_bias(wind_speed_d, dc_bias)
+wind_speed_d = remove_bias(wind_speed_d, dc_bias + 1)
 fig5, ax5 = plt.subplots()
 ax5.plot(sss_time_stamps, ground_speed, label='Ground Speed')
 ax5.plot(time_stamps, wind_speed_d, label='Debiased Airspeed')
@@ -176,5 +179,9 @@ textstr = ("RSME: %f" % rsme) + ("\nMA Window: %f" % ma_window)
 props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 ax6.text(0.05, 0.95, textstr, transform=ax6.transAxes, fontsize=11,
     verticalalignment='top', bbox=props)
+print("Root Mean Square Error: %f" % rsme)
+textstr = ("RSME %f" % rsme)
+# Plot FFT of filtered data
+plot_fft(wind_speed_f, time_stamps, "Filtered Air Speed FFT", 0)
 
 plt.show()
